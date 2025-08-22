@@ -3,6 +3,7 @@ package com.neueda.portfoliomanager.service;
 
 import com.neueda.portfoliomanager.entity.Stock;
 import com.neueda.portfoliomanager.entity.StockHistory;
+import com.neueda.portfoliomanager.entity.StockTicker;
 import com.neueda.portfoliomanager.repository.StockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,7 +94,7 @@ public class StockDataService {
 
         for (File file : files) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String ticker = file.getName().replace(".csv", "").toUpperCase();
+                StockTicker ticker = StockTicker.valueOf(file.getName().replace(".csv", "").toUpperCase());
 
                 Stock stock = stockRepository.findByTicker(ticker)
                         .orElseGet(() -> {
