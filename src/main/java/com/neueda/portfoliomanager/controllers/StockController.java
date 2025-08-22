@@ -1,7 +1,6 @@
 package com.neueda.portfoliomanager.controllers;
 
 import com.neueda.portfoliomanager.entity.Stock;
-import com.neueda.portfoliomanager.entity.StockTicker;
 import com.neueda.portfoliomanager.repository.StockRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +27,7 @@ public class StockController {
 
     @GetMapping("/{ticker}")
     public ResponseEntity<Stock> getStock(@PathVariable String ticker) {
-        return stockRepository.findByTicker(StockTicker.valueOf(ticker.toUpperCase()))
+        return stockRepository.findByTicker(ticker.toUpperCase())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
