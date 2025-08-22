@@ -22,6 +22,8 @@ public class Stock {
     private String ticker;
     private String name;
     private Double currentValue;
+
+    @Enumerated(EnumType.STRING)
     private StockType stockType;
 
     @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

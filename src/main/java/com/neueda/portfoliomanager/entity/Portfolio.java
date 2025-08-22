@@ -2,7 +2,6 @@ package com.neueda.portfoliomanager.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.transaction.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,13 +13,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Portfolio {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy ="portfolio_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Transaction> transactions;
+
 }
