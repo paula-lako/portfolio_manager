@@ -2,7 +2,7 @@ package com.neueda.portfoliomanager.entity;
 
 
 public enum StockType {
-    AKCJA,
+    AKCJA ,
     OBLIGACJA
 
 }
