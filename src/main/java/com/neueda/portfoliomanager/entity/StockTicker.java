@@ -11,10 +11,9 @@ public enum StockTicker {
     BFT, DOM, ERB, ENT, UNI, ANR, SNK;
 
 
-    public static List<String> getAll() {
-        return Arrays.stream(values())
-                .map(Enum::name)
-                .toList();
+
+    public String getTicker() {
+        return this.name();
     }
 }
 

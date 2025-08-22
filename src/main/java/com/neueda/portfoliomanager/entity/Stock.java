@@ -19,7 +19,8 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String ticker;
+    @Enumerated(EnumType.STRING)
+    private StockTicker ticker;
     private String name;
     private Double currentValue;
 

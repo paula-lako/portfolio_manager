@@ -3,6 +3,7 @@ package com.neueda.portfoliomanager.service;
 
 import com.neueda.portfoliomanager.entity.Stock;
 import com.neueda.portfoliomanager.entity.StockHistory;
+import com.neueda.portfoliomanager.entity.StockTicker;
 import com.neueda.portfoliomanager.repository.StockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,11 +56,12 @@ public class StockDataService {
     /**
      * Pobiera dane dla listy tickerów i zapisuje je do plików w folderze stocks/
      */
-    public void fetchDataFromStooq(List<String> tickers, LocalDate startDate, LocalDate endDate) {
+    public void fetchDataFromStooq(List<StockTicker> tickers, LocalDate startDate, LocalDate endDate) {
         File folder = new File("stocks");
         if (!folder.exists()) folder.mkdirs();
 
-        for (String ticker : tickers) {
+        for (StockTicker tickerEnum  : tickers) {
+            String ticker = tickerEnum.getTicker();
             String url = String.format(
                     "https://stooq.com/q/d/l/?s=%s&i=d&d1=%s&d2=%s",
                     ticker.toLowerCase(),
@@ -93,13 +95,13 @@ public class StockDataService {
 
         for (File file : files) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String ticker = file.getName().replace(".csv", "").toUpperCase();
-
-                Stock stock = stockRepository.findByTicker(ticker)
+                String tickerString = file.getName().replace(".csv", "").toUpperCase();
+                StockTicker tickerEnum = StockTicker.valueOf(tickerString);
+                Stock stock = stockRepository.findByTicker(tickerEnum)
                         .orElseGet(() -> {
                             Stock s = new Stock();
-                            s.setTicker(ticker);
-                            s.setName("Company " + ticker);
+                            s.setTicker(tickerEnum);
+                            s.setName("Company named " + tickerEnum);
                             return s;
                         });
 
