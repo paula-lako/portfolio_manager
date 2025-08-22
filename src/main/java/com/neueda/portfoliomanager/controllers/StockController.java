@@ -1,4 +1,4 @@
-package com.neueda.portfoliomanager.controller;
+package com.neueda.portfoliomanager.controllers;
 
 import com.neueda.portfoliomanager.entity.Stock;
 import com.neueda.portfoliomanager.repository.StockRepository;
