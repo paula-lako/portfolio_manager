@@ -26,6 +26,34 @@ public class StockDataService {
         this.stockRepository = stockRepository;
     }
 
+    public boolean needsUpdate() {
+        File folder = new File("stocks");
+        if (!folder.exists()) return true;
+
+        File[] files = folder.listFiles((dir, name) -> name.endsWith(".csv"));
+        if (files == null || files.length == 0) return true;
+
+        for (File file : files) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String lastLine = null, line;
+                while ((line = reader.readLine()) != null) {
+                    lastLine = line;
+                }
+                if (lastLine != null) {
+                    String[] parts = lastLine.split(",");
+                    LocalDate lastDate = LocalDate.parse(parts[0]);
+                    if (lastDate.isBefore(LocalDate.now().minusDays(1))) {
+                        return true; // stare dane
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return true;
+            }
+        }
+        return false; // dane są świeże
+    }
+
     /**
      * Pobiera dane dla listy tickerów i zapisuje je do plików w folderze stocks/
      */

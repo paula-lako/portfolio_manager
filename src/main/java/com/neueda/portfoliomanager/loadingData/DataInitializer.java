@@ -17,27 +17,25 @@ public class DataInitializer implements CommandLineRunner {
     public DataInitializer(StockDataService stockDataService) {
         this.stockDataService = stockDataService;
     }
-
     @Override
-    public void run(String... args) throws Exception {
-        List<String> tickers = List.of(
-                "PKO","PKN","PZU","SPL","PEO","DNP","ING","MBK","ALE","LPP",
-                "KGH","PGE","CDR","ZAB","ACP","ALR","TPE","BHW","BDX","CCC",
-                "PCO","OPL","ENA","CPS","XTB","KTY","KRU","MRB","CAR","ASE",
-                "GPW","WPL","RBW","NEU","MIL","PEP","PKP","APR","STP","LWB",
-                "BFT","DOM","ERB","ENT","UNI","ANR","SNK"
-        );
-
-        LocalDate end = LocalDate.now();
-        LocalDate start = end.minusDays(30);
-
-        stockDataService.fetchDataFromStooq(tickers, start, end);
-
-        System.out.println("Dane wczytane z pliku.");
-
-
+    public void run(String... args) {
+        if (stockDataService.needsUpdate()) {
+            stockDataService.fetchDataFromStooq(
+                    List.of(
+                            "PKO","PKN","PZU","SPL","PEO","DNP","ING","MBK","ALE","LPP",
+                            "KGH","PGE","CDR","ZAB","ACP","ALR","TPE","BHW","BDX","CCC",
+                            "PCO","OPL","ENA","CPS","XTB","KTY","KRU","MRB","CAR","ASE",
+                            "GPW","WPL","RBW","NEU","MIL","PEP","PKP","APR","STP","LWB",
+                            "BFT","DOM","ERB","ENT","UNI","ANR","SNK"
+                    ),
+                    LocalDate.now().minusDays(30),
+                    LocalDate.now()
+            );
+            System.out.println("Pobrano nowe dane z Stooq");
+        }
         stockDataService.saveDataToDatabase();
         System.out.println("Dane zapisane do bazy.");
     }
+
 }
 
