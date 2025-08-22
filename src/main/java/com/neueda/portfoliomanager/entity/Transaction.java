@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,14 +26,11 @@ public class Transaction {
     private Portfolio portfolio;
 
     private double amount;
+
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
+
     private LocalDateTime transactionDate;
-    private double totalPrice;  //  amount * unitPrice
+    private double totalPrice;  // amount * unitPrice
     private double unitPrice;
-
-
-
-
-
-
 }
