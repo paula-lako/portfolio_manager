@@ -19,7 +19,7 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private StockTicker ticker;
+    private String ticker;
     private String name;
     private Double currentValue;
 
