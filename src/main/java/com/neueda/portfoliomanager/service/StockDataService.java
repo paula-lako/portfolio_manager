@@ -99,7 +99,8 @@ public class StockDataService {
                         .orElseGet(() -> {
                             Stock s = new Stock();
                             s.setTicker(ticker);
-                            s.setName("Company " + ticker);
+                            s.setName(StockLoaderService.getNameByTicker(ticker));
+                            s.setStockType(StockLoaderService.getTypeByTicker(ticker));
                             return s;
                         });
 
