@@ -33,7 +33,6 @@ public class StockService {
                 .orElseThrow(() -> new StockNotFoundException("Stock with ticker " + ticker + " not found"));
     }
 
-    // Create
     public Stock createStock(Stock stock) {
         if (stock.getTicker() == null || stock.getTicker().isBlank()) {
             throw new InvalidStockException("Stock ticker cannot be empty");
@@ -47,10 +46,16 @@ public class StockService {
         if (stock.getCurrentValue() == null) {
             throw new InvalidStockException("Stock current value cannot be empty");
         }
+
+        if (stockRepository.existsByTicker(stock.getTicker())) {
+            throw new InvalidStockException(
+                    "Stock with ticker '" + stock.getTicker() + "' already exists"
+            );
+        }
+
         return stockRepository.save(stock);
     }
 
-    // Delete
     public void deleteStock(Long id) {
         if (!stockRepository.existsById(id)) {
             throw new StockNotFoundException("Stock with id " + id + " not found");
