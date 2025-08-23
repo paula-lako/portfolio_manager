@@ -1,5 +1,6 @@
 package com.neueda.portfoliomanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,11 +19,13 @@ public class Transaction {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "stock_id", referencedColumnName = "id")
+    @JoinColumn(name = "stock_id")
     private Stock stock;
+
 
     @ManyToOne
     @JoinColumn(name = "portfolio_id", referencedColumnName = "id")
+    @JsonBackReference
     private Portfolio portfolio;
 
     private double amount;
