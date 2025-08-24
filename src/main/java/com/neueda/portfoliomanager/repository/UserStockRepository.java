@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserStockRepository extends JpaRepository<UserStock, Long> {
+
     Optional<UserStock> findByPortfolioAndStock(Portfolio portfolio, Stock stock);
     List<UserStock> findByPortfolioId(Long portfolioId);
 }
