@@ -52,9 +52,7 @@ public class StockDataService {
         return false; // dane są świeże
     }
 
-    /**
-     * Pobiera dane dla listy tickerów i zapisuje je do plików w folderze stocks/
-     */
+    /* Downloads data for the lis of tickers and saves it to files in stock folder */
     public void fetchDataFromStooq(List<String> tickers, LocalDate startDate, LocalDate endDate) {
         File folder = new File("stocks");
         if (!folder.exists()) folder.mkdirs();
@@ -80,9 +78,7 @@ public class StockDataService {
         }
     }
 
-    /**
-     * Ładuje dane z plików CSV w folderze stocks i zapisuje do bazy danych
-     */
+    /* Loading data from csv files in stocks folder and saves it to STock Repository */
     @Transactional
     public void saveDataToDatabase() {
         File folder = new File("stocks");
@@ -99,7 +95,8 @@ public class StockDataService {
                         .orElseGet(() -> {
                             Stock s = new Stock();
                             s.setTicker(ticker);
-                            s.setName("Company " + ticker);
+                            s.setName(StockLoaderService.getNameByTicker(ticker));
+                            s.setStockType(StockLoaderService.getTypeByTicker(ticker));
                             return s;
                         });
 
