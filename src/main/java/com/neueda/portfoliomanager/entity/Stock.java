@@ -28,7 +28,7 @@ public class Stock {
 
     @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
-    @JsonIgnore
+//    @JsonIgnore
     private List<StockHistory> historicalValues = new ArrayList<>();
 }
 

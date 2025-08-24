@@ -18,7 +18,7 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
 
     // Pobranie wszystkich portfeli użytkownika
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<List<Portfolio>> getUserPortfolios(@PathVariable Long userId) {
         return ResponseEntity.ok(portfolioService.getPortfoliosByUser(userId));
     }
@@ -34,7 +34,7 @@ public class PortfolioController {
     }
 
     // Utworzenie nowego portfela dla użytkownika
-    @PostMapping("/user/{userId}")
+    @PostMapping("/users/{userId}")
     public ResponseEntity<Portfolio> createPortfolio(@PathVariable Long userId) {
         Portfolio portfolio = portfolioService.createPortfolio(userId);
         return new ResponseEntity<>(portfolio, HttpStatus.CREATED);

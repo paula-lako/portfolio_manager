@@ -22,7 +22,6 @@ public class Transaction {
     @JoinColumn(name = "stock_id")
     private Stock stock;
 
-
     @ManyToOne
     @JoinColumn(name = "portfolio_id", referencedColumnName = "id")
     @JsonBackReference
