@@ -7,24 +7,20 @@ import com.neueda.portfoliomanager.entity.StockHistory;
 import com.neueda.portfoliomanager.repository.StockHistoryRepository;
 import com.neueda.portfoliomanager.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class StockService {
 
     private final StockRepository stockRepository;
     private final StockHistoryRepository stockHistoryRepository;
 
     @Autowired
-    public StockService(StockRepository stockRepository) {
+    public StockService(StockRepository stockRepository, StockHistoryRepository stockHistoryRepository) {
         this.stockRepository = stockRepository;
-    public Stock getStockById(Long stockId) {
-        return stockRepository.findById(stockId)
-                .orElseThrow(() -> new RuntimeException("Stock not found"));
+        this.stockHistoryRepository = stockHistoryRepository;
     }
 
     public List<Stock> getAllStocks() {
@@ -39,6 +35,8 @@ public class StockService {
     public Stock getStockByTicker(String ticker) {
         return stockRepository.findByTicker(ticker)
                 .orElseThrow(() -> new StockNotFoundException("Stock with ticker " + ticker + " not found"));
+    }
+
     public Double getCurrentValue(Long stockId) {
         return stockHistoryRepository.findTopByStockIdOrderByDateDesc(stockId)
                 .map(StockHistory::getCloseValue)
@@ -106,7 +104,5 @@ public class StockService {
             throw new StockNotFoundException("Stock with id " + stockId + " not found");
         }
     }
-
-
 }
 
