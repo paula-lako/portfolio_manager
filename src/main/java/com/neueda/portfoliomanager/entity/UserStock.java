@@ -1,5 +1,8 @@
 package com.neueda.portfoliomanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,12 +18,16 @@ public class UserStock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "stock_id")
+    @JsonBackReference
     private Stock stock;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "portfolio_id", referencedColumnName = "id")
+    @JsonBackReference
     private Portfolio portfolio;
 
     private double actualPrice; // quantity * stock.currentValue
-    private int quantity;
+    private double quantity;
 }

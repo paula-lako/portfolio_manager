@@ -1,5 +1,6 @@
 package com.neueda.portfoliomanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class Stock {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,6 +28,7 @@ public class Stock {
 
     @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
+//    @JsonIgnore
     private List<StockHistory> historicalValues = new ArrayList<>();
 }
 

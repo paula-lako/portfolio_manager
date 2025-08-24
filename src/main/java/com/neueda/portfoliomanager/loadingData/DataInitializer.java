@@ -1,11 +1,12 @@
 package com.neueda.portfoliomanager.loadingData;
 
 
-import com.neueda.portfoliomanager.entity.StockTicker;
 import com.neueda.portfoliomanager.service.StockDataService;
+import com.neueda.portfoliomanager.service.StockLoaderService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.management.openmbean.CompositeData;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,10 +23,9 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         if (stockDataService.needsUpdate()) {
             stockDataService.fetchDataFromStooq(
-                    StockTicker.getAll(),
+                    StockLoaderService.getTickers(),
                     LocalDate.now().minusDays(30),
-                    LocalDate.now()
-            );
+                    LocalDate.now());
             System.out.println("Pobrano nowe dane z Stooq");
         }
         stockDataService.saveDataToDatabase();

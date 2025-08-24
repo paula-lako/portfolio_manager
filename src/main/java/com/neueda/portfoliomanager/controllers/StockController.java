@@ -2,33 +2,69 @@ package com.neueda.portfoliomanager.controllers;
 
 import com.neueda.portfoliomanager.entity.Stock;
 import com.neueda.portfoliomanager.repository.StockRepository;
+import com.neueda.portfoliomanager.service.StockService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/stocks")
+@RequestMapping("/stocks")
 public class StockController {
 
-    private final StockRepository stockRepository;
+    private final StockService stockService;
 
-    public StockController(StockRepository stockRepository) {
-        this.stockRepository = stockRepository;
+    private final Logger logger = LoggerFactory.getLogger(StockController.class);
+
+    @Autowired
+    public StockController(StockService stockService) {
+        this.stockService = stockService;
     }
 
     @GetMapping
-    public List<Stock> getAllStocks() {
-        return stockRepository.findAll();
+    public ResponseEntity<List<Stock>> getBooks() {
+        logger.info("GET /stocks called");
+        List<Stock> stocks = stockService.getAllStocks();
+        for (Stock stock : stocks) {
+            logger.info("Book details: {}", stock);
+        }
+        return ResponseEntity.ok(stocks);
     }
 
-    @GetMapping("/{ticker}")
-    public ResponseEntity<Stock> getStock(@PathVariable String ticker) {
-        return stockRepository.findByTicker(ticker.toUpperCase())
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/{id}")
+    public ResponseEntity<Stock> getStockById(@PathVariable Long id) {
+        logger.info("GET /stocks/{} called", id);
+        Stock stocks = stockService.getStockById(id);
+        return ResponseEntity.ok(stocks);
     }
+
+    @GetMapping("/ticker/{ticker}")
+    public ResponseEntity<Stock> getStockById(@PathVariable String ticker) {
+        logger.info("GET /stocks/ticker/{} called", ticker);
+        Stock stocks = stockService.getStockByTicker(ticker);
+        return ResponseEntity.ok(stocks);
+    }
+
+    @PostMapping
+    public ResponseEntity<Stock> createStock(@RequestBody Stock stock) {
+        Stock createdStock = stockService.createStock(stock);
+        return new ResponseEntity<>(createdStock, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStock(@PathVariable Long id) {
+        stockService.deleteStock(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{stockId}")
+    public ResponseEntity<String> updateStock(@PathVariable Long stockId, @RequestBody Stock stock) {
+        stockService.updateStock(stockId, stock);
+        return ResponseEntity.ok("Stock successfully updated!");
+    }
+
 }

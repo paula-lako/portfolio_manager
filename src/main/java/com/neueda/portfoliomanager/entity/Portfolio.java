@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -24,6 +25,10 @@ public class Portfolio {
 
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Transaction> transactions;
+    private List<Transaction> transactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<UserStock> portfolioStocks = new ArrayList<>();
 
 }
