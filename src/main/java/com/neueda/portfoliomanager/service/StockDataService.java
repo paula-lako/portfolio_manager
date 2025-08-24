@@ -39,7 +39,7 @@ public class StockDataService {
                 }
                 if (lastLine != null) {
                     String[] parts = lastLine.split(",");
-                    LocalDate lastDate = LocalDate.parse(parts[0]);
+                    LocalDate lastDate = LocalDate.parse(parts[0]);  // wywalilo mi tutaj
                     if (lastDate.isBefore(LocalDate.now().minusDays(1))) {
                         return true; // stare dane
                     }
@@ -130,6 +130,8 @@ public class StockDataService {
                 stock.getHistoricalValues().addAll(historyList);
 
                 stockRepository.save(stock);
+
+                // zapisujemy do stock repo a co z stockhistoryrepo????
 
             } catch (Exception e) {
                 e.printStackTrace();
