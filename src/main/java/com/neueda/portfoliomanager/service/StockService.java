@@ -3,6 +3,8 @@ package com.neueda.portfoliomanager.service;
 import com.neueda.portfoliomanager.entity.Stock;
 import com.neueda.portfoliomanager.exceptions.InvalidStockException;
 import com.neueda.portfoliomanager.exceptions.StockNotFoundException;
+import com.neueda.portfoliomanager.entity.StockHistory;
+import com.neueda.portfoliomanager.repository.StockHistoryRepository;
 import com.neueda.portfoliomanager.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,12 @@ import java.util.List;
 public class StockService {
 
     private final StockRepository stockRepository;
+    private final StockHistoryRepository stockHistoryRepository;
 
     @Autowired
-    public StockService(StockRepository stockRepository) {
+    public StockService(StockRepository stockRepository, StockHistoryRepository stockHistoryRepository) {
         this.stockRepository = stockRepository;
+        this.stockHistoryRepository = stockHistoryRepository;
     }
 
     public List<Stock> getAllStocks() {
@@ -31,6 +35,12 @@ public class StockService {
     public Stock getStockByTicker(String ticker) {
         return stockRepository.findByTicker(ticker)
                 .orElseThrow(() -> new StockNotFoundException("Stock with ticker " + ticker + " not found"));
+    }
+
+    public Double getCurrentValue(Long stockId) {
+        return stockHistoryRepository.findTopByStockIdOrderByDateDesc(stockId)
+                .map(StockHistory::getCloseValue)
+                .orElseThrow(() -> new RuntimeException("No historical data found"));
     }
 
     public Stock createStock(Stock stock) {
@@ -94,7 +104,5 @@ public class StockService {
             throw new StockNotFoundException("Stock with id " + stockId + " not found");
         }
     }
-
-
 }
 

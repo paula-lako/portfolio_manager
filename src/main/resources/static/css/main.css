@@ -1,0 +1,50 @@
+/* Sidebar css*/
+
+body {
+    display: flex;
+    min-height: 100vh;
+}
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh; /* 100% height of the visible browser window */
+    width: 300px;
+    background-color: #343a40;
+    padding: 20px 20px;
+    color: white;
+}
+.sidebar a {
+    display: block;
+    padding: 10px 20px;
+    color: #fff;
+    text-decoration: none;
+}
+.sidebar a:hover {
+    background-color: #495057;
+}
+.content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 320px;
+}
+
+/* Main card and buttons on homepage styles */
+
+.main-card {
+    height: 400px; /* increase height as needed */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* vertical centering */
+    align-items: center;    /* horizontal centering */
+    gap: 1.5rem;            /* space between elements */
+    padding: 2rem;
+}
+
+.main-card .btn {
+    width: 300px;
+}
+
+.btn-dark-border {
+    border: 2px solid #c6c7c8;
+}
