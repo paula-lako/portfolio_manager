@@ -12,7 +12,7 @@ public class StockLoaderService {
 
     public StockLoaderService() {
         StockLoader loader = new StockLoader();
-        this.loadedStocks = loader.loadStocks();
+        loadedStocks = loader.loadStocks();
     }
 
     public List<String[]> getStocks() {
