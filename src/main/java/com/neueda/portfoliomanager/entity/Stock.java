@@ -1,6 +1,5 @@
 package com.neueda.portfoliomanager.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,7 +20,7 @@ public class Stock {
 
     private String ticker;
     private String name;
-    private Double currentValue;
+    private double currentValue;
 
     @Enumerated(EnumType.STRING)
     private StockType stockType;

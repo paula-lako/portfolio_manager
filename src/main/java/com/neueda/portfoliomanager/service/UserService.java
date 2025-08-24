@@ -6,6 +6,7 @@ import com.neueda.portfoliomanager.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +70,14 @@ public class UserService {
         portfolio.setTitle(portfolioName);
         portfolio.setUser(userOptional);
         portfolio.setTransactions(new ArrayList<>());
-        userOptional.getPortfolioList().add(portfolio);
+        List<Portfolio> userPortfolioList = userOptional.getPortfolioList();
+        for (int i = 0; i < userPortfolioList.size(); i++) {
+            Portfolio portfolio1 = userPortfolioList.get(i);
+            if (portfolio1.getTitle().equals(portfolio.getTitle())) {
+                userPortfolioList.set(i, portfolio1);
+            }
+        }
+        userOptional.setPortfolioList(userPortfolioList);
         userRepository.save(userOptional);
         portfolioRepository.save(portfolio);
         return portfolio;
@@ -104,6 +112,7 @@ public class UserService {
             //jesli nie wyszukamy stocka to trzeba dodac pola,
             // zeby wypelnic dane stocka....
         }
+        transaction.setTransactionDate(LocalDateTime.now());
         transaction.setTotalPrice(transaction.getUnitPrice() * transaction.getAmount());
         List<Transaction> transactionList = portfolio.getTransactions();
         transactionList.add(transaction);

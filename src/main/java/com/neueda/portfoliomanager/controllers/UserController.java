@@ -48,8 +48,8 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/portfolios/create")
-    public ResponseEntity<Portfolio> createNewPortfolio(@PathVariable("userId") Long userId, RequestParam portfolioName) {
-        return new ResponseEntity<>(userService.createUserPortfolio(userId, String.valueOf(portfolioName)), HttpStatus.CREATED);
+    public ResponseEntity<Portfolio> createNewPortfolio(@PathVariable("userId") Long userId, @RequestParam String portfolioName) {
+        return new ResponseEntity<>(userService.createUserPortfolio(userId, portfolioName), HttpStatus.CREATED);
     }
 
     @GetMapping("/{userId}/portfolios/{portfolioId}")
@@ -64,6 +64,6 @@ public class UserController {
 
     @PostMapping("/{userId}/portfolios/{portfolioId}/managePortfolio/newTransaction")
     public ResponseEntity<List<Transaction>> addNewTransactionForPortfolio(@RequestParam String stockTicker, @RequestBody Transaction transaction, @PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId) {
-        return new ResponseEntity<>(userService.addNewTransactionForPortfolio(transaction, portfolioId, userId, stockTicker), HttpStatus.OK);
+        return new ResponseEntity<>(userService.addNewTransactionForPortfolio(transaction, userId, portfolioId, stockTicker), HttpStatus.OK);
     }
 }

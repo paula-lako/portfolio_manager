@@ -53,7 +53,7 @@ public class StockService {
         if (stock.getStockType() == null) {
             throw new InvalidStockException("Stock type cannot be empty");
         }
-        if (stock.getCurrentValue() == null) {
+        if (stock.getCurrentValue() == 0) {
             throw new InvalidStockException("Stock current value cannot be empty");
         }
 
@@ -81,7 +81,7 @@ public class StockService {
         if (newStock.getName() != null && !newStock.getName().isBlank()) {
             existingStock.setName(newStock.getName());
         }
-        if (newStock.getCurrentValue() != null) {
+        if (newStock.getCurrentValue() != 0) {
             existingStock.setCurrentValue(newStock.getCurrentValue());
         }
         if (newStock.getStockType() != null) {

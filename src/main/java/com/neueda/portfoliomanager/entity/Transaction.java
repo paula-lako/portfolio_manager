@@ -35,4 +35,11 @@ public class Transaction {
     private LocalDateTime transactionDate;
     private double totalPrice;  // amount * unitPrice
     private double unitPrice;
+
+    public Transaction(Long id, double amount, TransactionType transactionType, double unitPrice) {
+        this.id = id;
+        this.amount = amount;
+        this.transactionType = transactionType;
+        this.unitPrice = unitPrice;
+    }
 }
