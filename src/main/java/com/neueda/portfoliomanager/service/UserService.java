@@ -117,11 +117,28 @@ public class UserService {
         List<Transaction> transactionList = portfolio.getTransactions();
         transactionList.add(transaction);
         portfolio.setTransactions(transactionList);
-        UserStock userStock = new UserStock();
-        userStock.setPortfolio(portfolio);
-        userStock.setQuantity(userStock.getQuantity() + 1);
-        userStock.setStock(findStock.get());
-        userStock.setActualPrice(findStock.get().getCurrentValue());
+        // znajdź UserStock w tym portfelu lub stwórz nowy
+        Optional<Stock> finalFindStock = findStock;
+        UserStock userStock = userStockRepository.findByPortfolioAndStock(portfolio, findStock.get())
+                .orElseGet(() -> {
+                    UserStock us = new UserStock();
+                    us.setPortfolio(portfolio);
+                    us.setStock(finalFindStock.get());
+                    us.setQuantity(0);
+                    us.setActualPrice(0);
+                    return us;
+                });
+
+// aktualizacja liczby akcji
+        if (transaction.getTransactionType() == TransactionType.BUY) {
+            userStock.setQuantity(userStock.getQuantity() + transaction.getAmount());
+        } else if (transaction.getTransactionType() == TransactionType.SELL) {
+            if (userStock.getQuantity() < transaction.getAmount()) {
+                throw new RuntimeException("Not enough stocks to sell");
+            }
+            userStock.setQuantity(userStock.getQuantity() - transaction.getAmount());
+        }
+        userStock.setActualPrice(userStock.getQuantity() * findStock.get().getCurrentValue());
         userStockRepository.save(userStock);
         portfolioRepository.save(portfolio);
         transactionRepository.save(transaction);
