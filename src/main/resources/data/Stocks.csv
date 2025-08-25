@@ -46,3 +46,5 @@ ENT,Sample ENT,STOCK
 UNI,Sample UNI,STOCK
 ANR,Sample ANR,STOCK
 SNK,Sample SNK,STOCK
+10YPLY.B,Poland 10-Year Government Bond Yield,BOND
+AAAAX,Example of non existing ticker,OTHER
