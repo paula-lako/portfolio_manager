@@ -9,6 +9,15 @@ import com.neueda.portfoliomanager.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -16,11 +25,27 @@ public class StockService {
 
     private final StockRepository stockRepository;
     private final StockHistoryRepository stockHistoryRepository;
+    private final StockDataService stockDataService;
 
     @Autowired
-    public StockService(StockRepository stockRepository, StockHistoryRepository stockHistoryRepository) {
+    public StockService(StockRepository stockRepository, StockHistoryRepository stockHistoryRepository, StockDataService stockDataService) {
         this.stockRepository = stockRepository;
         this.stockHistoryRepository = stockHistoryRepository;
+        this.stockDataService = stockDataService;
+    }
+
+    private void appendStockToCsv(Stock stock) {
+        try {
+
+            Path path = Paths.get("data/stocks.csv");
+
+            // Row format: ticker,name,stockType
+            String row = stock.getTicker() + "," + stock.getName() + "," + stock.getStockType() + System.lineSeparator();
+
+            Files.write(path, row.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to append stock to CSV", e);
+        }
     }
 
     public List<Stock> getAllStocks() {
@@ -68,13 +93,58 @@ public class StockService {
             );
         }
 
-        return stockRepository.save(stock);
+        //Add row to the stock file
+        appendStockToCsv(stock);
+
+        //Try to download historical data for this ticker and save the ticker to repository
+        return stockDataService.fetchAndSaveSingleTicker(stock.getTicker(), stock.getName(), stock.getStockType(), LocalDate.now().minusDays(30), LocalDate.now());
     }
 
     public void deleteStock(Long id) {
         if (!stockRepository.existsById(id)) {
             throw new StockNotFoundException("Stock with id " + id + " not found");
         }
+
+        String tickerToRemove = this.getStockById(id).getTicker();
+
+        //delete row from csv:
+        Path csvPath = Paths.get("data", "stocks.csv");
+        Path tempPath = Paths.get("data", "temp_stocks.csv");
+
+        try (BufferedReader reader = Files.newBufferedReader(csvPath);
+             BufferedWriter writer = Files.newBufferedWriter(tempPath)) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                //Ticker is in first column
+                String[] parts = line.split(",");
+                if (!parts[0].equalsIgnoreCase(tickerToRemove)) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error while updating CSV file", e);
+        }
+
+        // Replace old file with new one
+        try {
+            Files.delete(csvPath);
+            Files.move(tempPath, csvPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while replacing CSV file", e);
+        }
+
+        // remove history file
+        Path tickerCsvPath = Paths.get("stocks", tickerToRemove + ".csv");
+        try {
+            if (Files.exists(tickerCsvPath)) {
+                Files.delete(tickerCsvPath);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error while deleting ticker file: " + tickerCsvPath, e);
+        }
+
         stockRepository.deleteById(id);
     }
 

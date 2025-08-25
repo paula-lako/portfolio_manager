@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Financial Instrument</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<!-- Sidebar placeholder -->
+<div id="sidebar-container"></div>
+
+<!-- Main Content -->
+<div class="content">
+    <h2 class="mb-4">➕ Add Financial Instrument</h2>
+
+    <div class="card p-4 mb-5">
+        <form id="financialInstrumentForm">
+            <div class="mb-3">
+                <label for="ticker" class="form-label">Ticker</label>
+                <input type="text" id="ticker" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Financial Instrument Name</label>
+                <input type="text" id="name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="instrumentType" class="form-label">Type</label>
+                <select id="instrumentType" class="form-select" required>
+                    <option value="" disabled selected>Select type</option>
+                    <option value="STOCK">STOCK</option>
+                    <option value="BOND">BOND</option>
+                    <option value="OTHER">OTHER</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn bg-primary bg-opacity-10 text-primary border border-primary">Add Financial Instrument</button>
+            </div>
+            <!-- Hidden field for current value - should be displayed when history data is not downloaded -->
+            <div id="currentValueManual" style="display:none; margin-top:10px;">
+                <div class="mb-3">
+                <label for="currentValue"  class="form-label">Enter Current Value for added Financial Instrument:</label>
+                <input type="number" id="currentValue" step="0.01" class="form-select"/>
+                </div>
+                <button id="submitCurrentValue" class="btn bg-primary bg-opacity-10 text-primary border border-primary">Save Value</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="responseMessage"></div>
+</div>
+
+<script>
+
+    // Load sidebar dynamically
+    fetch("sidebar.html")
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById("sidebar-container").innerHTML = data;
+        })
+        .catch(err => console.error("Sidebar load error:", err));
+
+    /* Logic for adding financial instrument */
+    const API_URL = "http://localhost:8080/stocks";
+
+    document.getElementById("financialInstrumentForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const newFinancialInstrument = {
+            ticker: document.getElementById("ticker").value,
+            name: document.getElementById("name").value,
+            stockType: document.getElementById("instrumentType").value,
+            currentValue: 0.01
+        };
+
+        fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newFinancialInstrument)
+        })
+            .then(async res => {
+                if(res.ok) return res.json();
+                else {
+                    const errorText = await res.text();
+                    throw new Error(errorText || "Failed to add Financial Instrument");
+                }
+            })
+            .then(data => {
+                if (!data.historicalValues || data.historicalValues.length === 0) {
+
+                    // Inform user that values were not downloaded and display additional field
+                    document.getElementById("responseMessage").innerHTML =
+                        `<div class="alert alert-warning">Instrument "${data.name}" added, but we were unable to download the historical data and current value for this instrument. Please provide current value.</div>`;
+                    document.getElementById("currentValueManual").style.display = "block";
+
+                    // Current Value Update
+                    document.getElementById("submitCurrentValue").onclick = function() {
+                        const manualValue = parseFloat(document.getElementById("currentValue").value);
+                        if (isNaN(manualValue) || manualValue <= 0) {
+                            alert("Please enter a valid value");
+                            return;
+                        }
+
+                        // call PATCH to update current value
+                        fetch(`${API_URL}/${data.id}`, {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ currentValue: manualValue })
+                        })
+                            .then(async res => {
+                                if (res.ok) return res.json();
+                                else {
+                                    const errorText = await res.text();
+                                    throw new Error(errorText || "Failed to add Financial Instrument");
+                                }
+
+                            })
+                            .then(updated => {
+                                document.getElementById("responseMessage").innerHTML =
+                                    `<div class="alert alert-success">Instrument updated with current value: ${updated.currentValue}</div>`;
+                                document.getElementById("currentValueManual").style.display = "none";
+                                document.getElementById("financialInstrumentForm").reset();
+                            })
+                            .catch(err => {
+                                document.getElementById("responseMessage").innerHTML =
+                                    `<div class="alert alert-danger">${err.message}</div>`;
+                            });
+                    };
+                } else {
+                    // if app was able to download history - display success message
+                    document.getElementById("responseMessage").innerHTML =
+                        `<div class="alert alert-success">Financial Instrument "${data.name}" added successfully! History was downloaded. </div>`;
+                    document.getElementById("financialInstrumentForm").reset();
+                }
+            })
+            .catch(err => {
+                document.getElementById("responseMessage").innerHTML =
+                    `<div class="alert alert-danger">${err.message}</div>`;
+            });
+    });
+
+</script>
+</body>
+</html>

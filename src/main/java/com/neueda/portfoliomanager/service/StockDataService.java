@@ -3,6 +3,7 @@ package com.neueda.portfoliomanager.service;
 
 import com.neueda.portfoliomanager.entity.Stock;
 import com.neueda.portfoliomanager.entity.StockHistory;
+import com.neueda.portfoliomanager.entity.StockType;
 import com.neueda.portfoliomanager.repository.StockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,8 @@ public class StockDataService {
     }
 
     public boolean needsUpdate() {
-        File folder = new File("stocks");
+
+        /*File folder = new File("stocks");
         if (!folder.exists()) return true;
 
         File[] files = folder.listFiles((dir, name) -> name.endsWith(".csv"));
@@ -48,12 +50,13 @@ public class StockDataService {
                 e.printStackTrace();
                 return true;
             }
-        }
+        }*/
+
         return false; // dane są świeże
     }
 
     /* Downloads data for the lis of tickers and saves it to files in stock folder */
-    public void fetchDataFromStooq(List<String> tickers, LocalDate startDate, LocalDate endDate) {
+    public static void fetchDataFromStooq(List<String> tickers, LocalDate startDate, LocalDate endDate) {
         File folder = new File("stocks");
         if (!folder.exists()) folder.mkdirs();
 
@@ -78,7 +81,7 @@ public class StockDataService {
         }
     }
 
-    /* Loading data from csv files in stocks folder and saves it to STock Repository */
+    /* Loading data from csv files in stocks folder and saves it to Stock Repository */
     @Transactional
     public void saveDataToDatabase() {
         File folder = new File("stocks");
@@ -136,6 +139,78 @@ public class StockDataService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Transactional
+    public Stock fetchAndSaveSingleTicker(String ticker, String name, StockType type, LocalDate startDate, LocalDate endDate) {
+        File folder = new File("stocks");
+        if (!folder.exists()) folder.mkdirs();
+
+        //Download csv for specific ticker:
+        String url = String.format(
+                "https://stooq.com/q/d/l/?s=%s&i=d&d1=%s&d2=%s",
+                ticker.toLowerCase(),
+                startDate.format(FORMATTER),
+                endDate.format(FORMATTER)
+        );
+        File outFile = new File(folder, ticker.toUpperCase() + ".csv");
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to fetch data for ticker " + ticker, e);
+        }
+
+        //Save the data to the repository
+        try (BufferedReader reader = new BufferedReader(new FileReader(outFile))) {
+            Stock stock = stockRepository.findByTicker(ticker.toUpperCase())
+                    .orElseGet(() -> {
+                        Stock s = new Stock();
+                        s.setTicker(ticker.toUpperCase());
+                        s.setName(name);
+                        s.setStockType(type);
+                        return s;
+                    });
+
+            List<StockHistory> historyList = new ArrayList<>();
+            String line;
+            boolean skipHeader = true;
+
+            while ((line = reader.readLine()) != null) {
+                if (skipHeader) {
+                    skipHeader = false;
+                    continue;
+                }
+                String[] parts = line.split(",");
+                if (parts.length < 5) continue;
+
+                LocalDate date = LocalDate.parse(parts[0]);
+                Double closeValue = Double.parseDouble(parts[4]);
+
+                StockHistory history = new StockHistory();
+                history.setDate(date);
+                history.setCloseValue(closeValue);
+                history.setStock(stock);
+                historyList.add(history);
+            }
+
+            if (!historyList.isEmpty()) {
+                stock.setCurrentValue(historyList.get(historyList.size() - 1).getCloseValue());
+            }
+
+            stock.getHistoricalValues().clear();
+            stock.getHistoricalValues().addAll(historyList);
+
+            return stockRepository.save(stock);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse CSV for ticker " + ticker, e);
         }
     }
 }
