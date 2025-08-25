@@ -67,10 +67,10 @@
                     <td>${stock.stockType ?? '-'}</td>
                     <td>${stock.currentValue} PLN</td>
                      <td>
-                        <button class="btn btn-sm btn-primary buy-btn"
+                        <button class="btn btn-sm btn-primary add-btn"
                                 data-ticker="${stock.ticker}"
                                 data-price="${stock.currentValue}">
-                            Buy
+                            Add
                         </button>
                      </td>
                 </tr>`;
@@ -79,7 +79,7 @@
 
 
         tableBody.addEventListener("click", (e) => {
-            if (e.target.classList.contains("buy-btn")) {
+            if (e.target.classList.contains("add-btn")) {
                 const ticker = e.target.getAttribute("data-ticker");
                 const price = e.target.getAttribute("data-price");
                 const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
