@@ -50,6 +50,9 @@
 </div>
 
     <script>
+
+        const userId = 1;        // Use seeded user
+        const portfolioId = 1;   // Use seeded portfolio
         // Load sidebar dynamically
         fetch("sidebar.html")
             .then(res => res.text())
@@ -59,7 +62,7 @@
             .catch(err => console.error("Sidebar load error:", err));
         
         // Fetch current portfolio value from backend API
-        fetch('/api/portfolio/current-value')
+        fetch('/user/${userId}/portfolio/${portfolioId}/value')
             .then(response => response.json())
             .then(data => {
                 const value = data.currentValue; // backend returns { "currentValue": 12345.67 }
@@ -68,7 +71,7 @@
             .catch(err => console.error('Error fetching current value:', err));
 
         // current return rate
-        fetch('/api/portfolio/current-return')
+        fetch('/user/${userId}/portfolio/${portfolioId}/return')
             .then(response => response.json())
             .then(data => {
                 const value = data.currentReturn; // backend returns { "currenReturn": 12345.67 }
@@ -79,40 +82,42 @@
 
 
         // Example portfolio history data (replace with real values)
-    const historyLabels = ["Jan", "Feb", "Mar", "Apr", "May"];
-    const historyValues = [10000, 10500, 11000, 10200, 12000];
+    ///const historyLabels = ["Jan", "Feb", "Mar", "Apr", "May"];
+    //const historyValues = [10000, 10500, 11000, 10200, 12000];
 
-    const ctx = document.getElementById("portfolioHistoryChart").getContext("2d");
-    new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: historyLabels,
-            datasets: [{
-                label: "Portfolio Value ($)",
-                data: historyValues,
-                borderColor: "rgba(75, 192, 192, 1)",
-                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                borderWidth: 2,
-                fill: true,
-                tension: 0.2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: true, position: "bottom" }
+    fetch('/user/${userId}/portfolio/${portfolioId}/history')  // userId and portfolioId variables
+    .then(response => response.json())
+    .then(data => {
+        const labels = data.map(entry => entry.date);   // dates from backend
+        const values = data.map(entry => entry.value);  // values from backend
+
+        const ctx = document.getElementById("portfolioHistoryChart").getContext("2d");
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,  // use dynamic labels
+                datasets: [{
+                    label: "Portfolio Value ($)",
+                    data: values,  // use dynamic values
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2
+                }]
             },
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    title: { display: true, text: "Value ($)" }
-                },
-                x: {
-                    title: { display: true, text: "Date" }
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true, position: "bottom" } },
+                scales: {
+                    y: { beginAtZero: false, title: { display: true, text: "Value ($)" } },
+                    x: { title: { display: true, text: "Date" } }
                 }
             }
-        }
-    });
+        });
+    })
+    .catch(err => console.error('Error fetching portfolio history:', err));
+
 
     // return rate chart
         // Example portfolio history data (replace with real values)

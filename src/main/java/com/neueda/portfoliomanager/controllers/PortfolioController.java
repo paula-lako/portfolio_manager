@@ -39,4 +39,17 @@ import java.util.List;
 //        Portfolio portfolio = portfolioService.createPortfolio(userId);
 //        return new ResponseEntity<>(portfolio, HttpStatus.CREATED);
 //    }
+
+    // @GetMapping("/{id}/value")
+    // public double getPortfolioValue(@PathVariable Long id) {
+    //     Portfolio portfolio = portfolioService.getPortfolio(id);
+    //     return portfolioService.calculateCurrentValue(portfolio);
+    // }
+
+    // @GetMapping("/{id}/history")
+    // public List<PortfolioValueDTO> getPortfolioHistory(@PathVariable Long id) {
+    //     return portfolioService.calculateHistoricalValues(id);
+    // }
+
+
 //}

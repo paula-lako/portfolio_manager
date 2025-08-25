@@ -1,4 +1,4 @@
-//package com.neueda.portfoliomanager.controllers;
+package com.neueda.portfoliomanager.controllers;
 
 import com.neueda.portfoliomanager.entity.Transaction;
 import com.neueda.portfoliomanager.entity.TransactionType;

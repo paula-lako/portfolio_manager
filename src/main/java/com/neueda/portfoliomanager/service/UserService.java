@@ -15,11 +15,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final PortfolioService portfolioService;
+
     private final UserRepository userRepository;
     private final PortfolioRepository portfolioRepository;
     private final TransactionRepository transactionRepository;
     private final StockRepository stockRepository;
-    private final UserStockRepository userStockRepository;
+    private final UserStockRepository userStockRepository;   
+
 
     public User getUserById(Long userId) {
         var userOptional = userRepository.findById(userId);
@@ -87,6 +90,11 @@ public class UserService {
         List<Portfolio> portfolioList = portfolioRepository.findByUserId(userId);
         Optional<Portfolio> portfolioOP = portfolioList.stream().filter(p -> p.getId().equals(portfolioId)).findFirst();
         Portfolio portfolio = portfolioOP.get();
+
+     //   Portfolio portfolio = portfolioOP.orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        portfolio.setValue(portfolioService.calculateCurrentValue(portfolio));
+        portfolio.setReturnRate(portfolioService.calculatReturnRate(portfolio));
+        portfolio.setHistory(portfolioService.calculatePortfolioHistory(portfolio));
 
         // obliczenia potrzebne do wyswietlenia performance,
         // dodac pola w klasie portfolio jak trzeba potem wyswietlic rozne wartosci i listy

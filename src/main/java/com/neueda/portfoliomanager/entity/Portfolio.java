@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Entity
@@ -18,6 +19,9 @@ public class Portfolio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private double value;
+    private double returnRate;
+    private List <Map<String, Object>> history = new ArrayList<>();
 
     private String title;
     @ManyToOne
