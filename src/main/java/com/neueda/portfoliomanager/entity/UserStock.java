@@ -1,6 +1,7 @@
 package com.neueda.portfoliomanager.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class UserStock {
 
     @ManyToOne
     @JoinColumn(name = "stock_id")
-    @JsonBackReference
+    @JsonIgnoreProperties({"historicalValues"})
     private Stock stock;
 
     @ManyToOne
@@ -28,6 +29,10 @@ public class UserStock {
 
     private double actualPrice; // quantity * stock.currentValue
     private double quantity;
+    @Transient
+    private double investedMoney;
+
+
 
     //historia... z stock history
 
