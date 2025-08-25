@@ -69,7 +69,7 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/portfolios/{portfolioId}/managePortfolio/newTransaction")
-    public ResponseEntity<List<Transaction>> addNewTransactionForPortfolio(@RequestParam String stockTicker, @RequestBody Transaction transaction, @PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId) {
+    public ResponseEntity<List<Transaction>> addNewTransactionForPortfolio( @PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId, @RequestParam String stockTicker, @RequestBody Transaction transaction) {
         return new ResponseEntity<>(userService.addNewTransactionForPortfolio(transaction, userId, portfolioId, stockTicker), HttpStatus.OK);
     }
 }

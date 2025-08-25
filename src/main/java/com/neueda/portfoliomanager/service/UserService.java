@@ -134,9 +134,6 @@ public class UserService {
             userStock.setQuantity(userStock.getQuantity() - transaction.getAmount());
         }
         userStock.setActualPrice(userStock.getQuantity() * findStock.get().getCurrentValue());
-        userStockRepository.save(userStock);
-        portfolioRepository.save(portfolio);
-        transactionRepository.save(transaction);
         User user = getUserById(userId);
         List<Portfolio> userPortfolioList = user.getPortfolioList();
         for (int i = 0; i < userPortfolioList.size(); i++) {
@@ -147,6 +144,9 @@ public class UserService {
         }
         user.setPortfolioList(userPortfolioList);
         userRepository.save(user);
+        userStockRepository.save(userStock);
+        portfolioRepository.save(portfolio);
+        transactionRepository.save(transaction);
         return portfolio.getTransactions();
     }
 
