@@ -46,7 +46,7 @@
             document.getElementById("stockTicker").textContent = stock.ticker;
             document.getElementById("stockPrice").textContent = stock.currentValue + " PLN";
 
-            // Prepare data for chart
+
             const labels = stock.historicalValues.map(v => v.date);
             const values = stock.historicalValues.map(v => v.closeValue);
 
