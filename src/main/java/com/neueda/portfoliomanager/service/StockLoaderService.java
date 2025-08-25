@@ -44,7 +44,7 @@ public class StockLoaderService {
                 .filter(s -> s[0].equalsIgnoreCase(ticker)) // filter data by ticker
                 .map(s -> s[2]) // return type (second column) for this ticker
                 .findFirst()
-                .orElse("UNKNOWN")); // set this type if ticker not found
+                .orElse("OTHER")); // set this type if ticker not found
     }
 
 }
