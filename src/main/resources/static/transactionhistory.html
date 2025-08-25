@@ -21,7 +21,7 @@
 
     <!-- Search field -->
     <div class="mb-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search by ticker, name or date ...">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by ticker, name, date or type ...">
     </div>
 
     <table class="table table-striped table-bordered">
@@ -44,6 +44,7 @@
     </table>
 </div>
 <script>
+    // Load sidebar
     fetch("sidebar.html")
         .then(res => res.text())
         .then(data => {
@@ -51,43 +52,62 @@
         })
         .catch(err => console.error("Sidebar load error:", err));
 
-
     document.addEventListener("DOMContentLoaded", () => {
         const userId = 1;
         const portfolioId = 1;
         const tableBody = document.getElementById("transactionsTable");
+        let allTransactions = []; //full list of transactions
 
-        // Załaduj transakcje
+        function renderTable(transactions) {
+            tableBody.innerHTML = "";
+            transactions.forEach(tx => {
+                const ticker = tx.stock?.ticker ?? '-';
+                const date = tx.transactionDate ? tx.transactionDate.split('T')[0] : '-';
+                const row = `
+                    <tr>
+                        <td>${tx.id}</td>
+                        <td>${ticker}</td>
+                        <td>${date}</td>
+                        <td>${tx.amount}</td>
+                        <td>${tx.unitPrice?.toFixed(2) ?? 0} PLN</td>
+                        <td>${tx.totalPrice?.toFixed(2) ?? 0} PLN</td>
+                        <td>${tx.transactionType}</td>
+                        <td>
+                            <button class="btn btn-sm bg-primary bg-opacity-10 text-primary border border-primary edit-btn" data-id="${tx.id}">Edit</button>
+                            <button class="btn btn-sm bg-danger bg-opacity-10 text-danger border border-danger delete-btn" data-id="${tx.id}">Remove</button>
+                        </td>
+                    </tr>`;
+                tableBody.insertAdjacentHTML("beforeend", row);
+            });
+        }
+
+        //Loading transactions
         fetch(`/user/${userId}/portfolios/${portfolioId}/managePortfolio`)
             .then(res => {
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 return res.json();
             })
             .then(transactions => {
-                tableBody.innerHTML = "";
-                transactions.forEach(tx => {
-                    const ticker = tx.stock?.ticker ?? '-';
-                    const date = tx.transactionDate ? tx.transactionDate.split('T')[0] : '-';
-                    const row = `
-                        <tr>
-                            <td>${tx.id}</td>
-                            <td>${ticker}</td>
-                            <td>${date}</td>
-                            <td>${tx.amount}</td>
-                            <td>${tx.unitPrice?.toFixed(2) ?? 0} PLN</td>
-                            <td>${tx.totalPrice?.toFixed(2) ?? 0} PLN</td>
-                            <td>${tx.transactionType}</td>
-                            <td>
-                                <button class="btn btn-sm bg-primary bg-opacity-10 text-primary border border-primary edit-btn" data-id="${tx.id}">Edit</button>
-                                <button class="btn btn-sm bg-danger bg-opacity-10 text-danger border border-danger delete-btn" data-id="${tx.id}">Remove</button>
-                            </td>
-                        </tr>`;
-                    tableBody.insertAdjacentHTML("beforeend", row);
-                });
+                allTransactions = transactions;
+                renderTable(allTransactions);
             })
-            .catch(err => console.error("Błąd pobierania transakcji:", err));
+            .catch(err => console.error("Error for getting transactions:", err));
 
-        // Obsługa kliknięć (Edit / Delete)
+        //Filter logic for Search Input
+        const searchInput = document.getElementById("searchInput");
+        searchInput.addEventListener("input", () => {
+            const query = searchInput.value.toLowerCase();
+            const filtered = allTransactions.filter(tx => {
+                const ticker = tx.stock?.ticker?.toLowerCase() ?? "";
+                const name = tx.stock?.name?.toLowerCase() ?? "";
+                const date = tx.transactionDate ? tx.transactionDate.split('T')[0].toLowerCase() : "";
+                const type = tx.transactionType?.toLowerCase() ?? "";
+                return ticker.includes(query) || name.includes(query) || date.includes(query) || type.includes(query);
+            });
+            renderTable(filtered);
+        });
+
+        //Logic for buttons (Edit / Delete)
         tableBody.addEventListener("click", (e) => {
             const id = e.target.dataset.id;
             if (!id) return;
@@ -109,6 +129,5 @@
         });
     });
 </script>
-
 </body>
 </html>
