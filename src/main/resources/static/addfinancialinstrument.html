@@ -84,7 +84,7 @@
                 if(res.ok) return res.json();
                 else {
                     const errorText = await res.text();
-                    throw new Error(errorText || "Failed to add FInancial Instrument");
+                    throw new Error(errorText || "Failed to add Financial Instrument");
                 }
             })
             .then(data => {
@@ -95,7 +95,7 @@
                         `<div class="alert alert-warning">Instrument "${data.name}" added, but we were unable to download the historical data and current value for this instrument. Please provide current value.</div>`;
                     document.getElementById("currentValueManual").style.display = "block";
 
-                    // attach listener for manual value save
+                    // Current Value Update
                     document.getElementById("submitCurrentValue").onclick = function() {
                         const manualValue = parseFloat(document.getElementById("currentValue").value);
                         if (isNaN(manualValue) || manualValue <= 0) {
