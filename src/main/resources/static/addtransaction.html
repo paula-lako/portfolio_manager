@@ -60,6 +60,72 @@
         .catch(err => console.error("Sidebar load error:", err));
 
    /* Logic for adding transaction */
+        document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("transactionForm");
+        const responseMessage = document.getElementById("responseMessage");
+
+        // Zmienna konfiguracyjna – dostosuj do swojego API
+        const userId = 1;       // Możesz pobrać dynamicznie np. z sesji lub URL
+        const portfolioId = 1;  // jw.
+
+        // Załaduj listę dostępnych instrumentów
+        fetch("/stocks") // endpoint z StockController
+            .then(res => res.json())
+            .then(stocks => {
+                const select = document.getElementById("instrumentSelect");
+                stocks.forEach(stock => {
+                    let opt = document.createElement("option");
+                    opt.value = stock.ticker;
+                    opt.textContent = stock.name + " (" + stock.ticker + ")";
+                    select.appendChild(opt);
+                });
+            });
+
+        // Obsługa wysyłki formularza
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const stockTicker = document.getElementById("instrumentSelect").value;
+            const date = document.getElementById("transactionDate").value;
+            const amount = document.getElementById("transactionVolume").value;
+            const unitPrice = document.getElementById("transactionPrice").value;
+            const transactionType = document.getElementById("transactionType").value;
+
+            // Konwersja daty na format ISO LocalDateTime
+            const transactionDate = date + "T00:00:00";
+
+            const transactionData = {
+                amount: parseFloat(amount),
+                unitPrice: parseFloat(unitPrice),
+                transactionType: transactionType,
+                transactionDate: transactionDate
+            };
+
+            fetch(`/user/${userId}/portfolios/${portfolioId}/managePortfolio/newTransaction?stockTicker=${stockTicker}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                body: JSON.stringify({
+                    amount: parseFloat(document.getElementById("transactionVolume").value),
+                    unitPrice: parseFloat(document.getElementById("transactionPrice").value),
+                    transactionType: document.getElementById("transactionType").value
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Błąd zapisu transakcji");
+                return res.json();
+            })
+            .then(data => {
+                responseMessage.innerHTML = `<div class="alert alert-success">Transaction added successfully!</div>`;
+                console.log("Response:", data);
+            })
+            .catch(err => {
+                responseMessage.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+            });
+        });
+    });
+
 </script>
 </body>
 </html>

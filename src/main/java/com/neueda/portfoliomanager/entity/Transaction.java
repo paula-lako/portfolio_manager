@@ -1,6 +1,7 @@
 package com.neueda.portfoliomanager.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,14 +25,14 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "portfolio_id", referencedColumnName = "id")
-    @JsonBackReference
+    @JsonBackReference("portfolio-transactions")
     private Portfolio portfolio;
 
     private double amount;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
-
+    //@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime transactionDate;
     private double totalPrice;  // amount * unitPrice
     private double unitPrice;
