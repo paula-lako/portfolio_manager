@@ -93,7 +93,7 @@ public class UserService {
 
      //   Portfolio portfolio = portfolioOP.orElseThrow(() -> new RuntimeException("Portfolio not found"));
         portfolio.setValue(portfolioService.calculateCurrentValue(portfolio));
-        portfolio.setReturnRate(portfolioService.calculatReturnRate(portfolio));
+        portfolio.setReturnRate(portfolioService.calculateReturnRate(portfolio));
         portfolio.setHistory(portfolioService.calculatePortfolioHistory(portfolio));
 
         // obliczenia potrzebne do wyswietlenia performance,

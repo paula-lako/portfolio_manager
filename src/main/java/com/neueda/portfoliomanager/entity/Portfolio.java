@@ -22,6 +22,7 @@ public class Portfolio {
     private Long id;
     private double value;
     private double returnRate;
+    @Transient
     private List <Map<String, Object>> history = new ArrayList<>();
 
     private String title;

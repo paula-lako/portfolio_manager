@@ -23,6 +23,7 @@ public class Stock {
     private String ticker;
     private String name;
     private double currentValue;
+    private double currentReturn;
 
     @Enumerated(EnumType.STRING)
     private StockType stockType;

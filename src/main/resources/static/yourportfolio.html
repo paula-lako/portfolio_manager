@@ -60,7 +60,7 @@
             .catch(err => console.error("Sidebar load error:", err));
         
         // Fetch current portfolio value from backend API
-        fetch('/user/${userId}/portfolio/${portfolioId}/value')
+        fetch(`/user/${userId}/portfolio/${portfolioId}/value`)
             .then(response => response.json())
             .then(data => {
                 const value = data.currentValue; // backend returns { "currentValue": 12345.67 }
@@ -69,7 +69,7 @@
             .catch(err => console.error('Error fetching current value:', err));
 
         // current return rate
-        fetch('/user/${userId}/portfolio/${portfolioId}/return')
+        fetch(`/user/${userId}/portfolio/${portfolioId}/return`)
             .then(response => response.json())
             .then(data => {
                 const value = data.currentReturn; // backend returns { "currenReturn": 12345.67 }
@@ -83,7 +83,7 @@
     ///const historyLabels = ["Jan", "Feb", "Mar", "Apr", "May"];
     //const historyValues = [10000, 10500, 11000, 10200, 12000];
 
-    fetch('/user/${userId}/portfolio/${portfolioId}/history')  // userId and portfolioId variables
+    fetch(`/user/${userId}/portfolio/${portfolioId}/history`)  // userId and portfolioId variables
     .then(response => response.json())
     .then(data => {
         const labels = data.map(entry => entry.date);   // dates from backend

@@ -13,9 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -85,6 +87,26 @@ public class UserController {
     @DeleteMapping("/{userId}/portfolios/{portfolioId}/transactions/{transactionId}")
     public void deleteTransaction( @PathVariable Long userId, @PathVariable Long portfolioId, @PathVariable Long transactionId) {
         userService.deleteTransaction(userId, portfolioId, transactionId);
+    }
+
+    @GetMapping("/{userId}/portfolio/{portfolioId}/value")
+    public Map<String, Double> getPortfolioValue(@PathVariable Long userId, @PathVariable Long portfolioId) {
+        Portfolio portfolio = userService.getUserPortfolio(userId, portfolioId);
+        double value = portfolioService.calculateCurrentValue(portfolio);
+        return Map.of("currentValue", value);
+    }
+
+    @GetMapping("/{userId}/portfolio/{portfolioId}/return")
+    public Map<String, Double> getPortfolioReturn(@PathVariable Long userId, @PathVariable Long portfolioId) {
+        Portfolio portfolio = userService.getUserPortfolio(userId, portfolioId);
+        double rate = portfolioService.calculateReturnRate(portfolio);
+        return Map.of("currentReturn", rate);
+    }
+
+    @GetMapping("/{userId}/portfolio/{portfolioId}/history")
+    public List<Map<String, Object>> getPortfolioHistory(@PathVariable Long userId, @PathVariable Long portfolioId) {
+        Portfolio portfolio = userService.getUserPortfolio(userId, portfolioId);
+        return portfolioService.calculatePortfolioHistory(portfolio);
     }
 
 }

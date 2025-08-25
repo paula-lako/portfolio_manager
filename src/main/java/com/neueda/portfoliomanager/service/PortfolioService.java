@@ -65,7 +65,7 @@ public class PortfolioService {
             .sum();
     }
 
-    public double calculatReturnRate(Portfolio portfolio) {
+    public double calculateReturnRate(Portfolio portfolio) {
         List<UserStock> userStocks = userStockRepository.findByPortfolioId(portfolio.getId());
 
         double currentValue = userStocks.stream()
