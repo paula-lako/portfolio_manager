@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<!-- Sidebar placeholder -->
+<div id="sidebar-container"></div>
+
+<!-- Main Content -->
+<div class="content">
+    <h2 class="mb-4">💹 Transaction History</h2>
+
+    <!-- Add Transactions button -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="addtransaction.html" class="btn btn-light btn-lg btn-dark-border">➕ Add Transaction</a>
+    </div>
+
+    <!-- Search field -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by ticker, name or date ...">
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Ticker</th>
+            <th>Date</th>
+            <th>Volume</th>
+            <th>Unit Price</th>
+            <th>Total Price</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="transactionsTable">
+        <!-- Transactions to be inserted here -->
+
+        </tbody>
+    </table>
+</div>
+<script>
+    fetch("sidebar.html")
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById("sidebar-container").innerHTML = data;
+        })
+        .catch(err => console.error("Sidebar load error:", err));
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const userId = 1;
+        const portfolioId = 1;
+        const tableBody = document.getElementById("transactionsTable");
+
+        // Załaduj transakcje
+        fetch(`/user/${userId}/portfolios/${portfolioId}/managePortfolio`)
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
+            .then(transactions => {
+                tableBody.innerHTML = "";
+                transactions.forEach(tx => {
+                    const ticker = tx.stock?.ticker ?? '-';
+                    const date = tx.transactionDate ? tx.transactionDate.split('T')[0] : '-';
+                    const row = `
+                        <tr>
+                            <td>${tx.id}</td>
+                            <td>${ticker}</td>
+                            <td>${date}</td>
+                            <td>${tx.amount}</td>
+                            <td>${tx.unitPrice?.toFixed(2) ?? 0} PLN</td>
+                            <td>${tx.totalPrice?.toFixed(2) ?? 0} PLN</td>
+                            <td>${tx.transactionType}</td>
+                            <td>
+                                <button class="btn btn-sm bg-primary bg-opacity-10 text-primary border border-primary edit-btn" data-id="${tx.id}">Edit</button>
+                                <button class="btn btn-sm bg-danger bg-opacity-10 text-danger border border-danger delete-btn" data-id="${tx.id}">Remove</button>
+                            </td>
+                        </tr>`;
+                    tableBody.insertAdjacentHTML("beforeend", row);
+                });
+            })
+            .catch(err => console.error("Błąd pobierania transakcji:", err));
+
+        // Obsługa kliknięć (Edit / Delete)
+        tableBody.addEventListener("click", (e) => {
+            const id = e.target.dataset.id;
+            if (!id) return;
+
+            if (e.target.classList.contains("delete-btn")) {
+                if (confirm("Are you sure you want to delete this transaction?")) {
+                    fetch(`/user/${userId}/portfolios/${portfolioId}/transactions/${id}`, { method: "DELETE" })
+                        .then(res => {
+                            if (!res.ok) throw new Error("Delete failed");
+                            e.target.closest("tr").remove();
+                        })
+                        .catch(err => alert(err.message));
+                }
+            }
+
+            if (e.target.classList.contains("edit-btn")) {
+                window.location.href = `edittransaction.html?id=${id}&userId=${userId}&portfolioId=${portfolioId}`;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
