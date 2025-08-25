@@ -25,7 +25,7 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "portfolio_id", referencedColumnName = "id")
-    @JsonBackReference
+    @JsonBackReference("portfolio-transactions")
     private Portfolio portfolio;
 
     private double amount;
