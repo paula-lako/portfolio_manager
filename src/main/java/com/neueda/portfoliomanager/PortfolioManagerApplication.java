@@ -8,6 +8,7 @@ public class PortfolioManagerApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PortfolioManagerApplication.class, args);
+        // tutaj stwórz usera i portfolio
     }
 
 }

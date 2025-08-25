@@ -28,4 +28,7 @@ public class UserStock {
 
     private double actualPrice; // quantity * stock.currentValue
     private double quantity;
+
+    //historia... z stock history
+
 }

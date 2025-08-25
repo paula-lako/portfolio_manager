@@ -27,4 +27,6 @@ public class Portfolio {
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Transaction> transactions;
+
+    // dodaj liste userStocks
 }
