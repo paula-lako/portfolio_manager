@@ -163,4 +163,25 @@ public class UserService {
         }
         return userStocksList;
     }
+    public Transaction updateTransaction(Long userId, Long portfolioId, Long transactionId, Transaction updatedTransaction) {
+        Transaction existing = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        existing.setAmount(updatedTransaction.getAmount());
+        existing.setUnitPrice(updatedTransaction.getUnitPrice());
+        existing.setTransactionType(updatedTransaction.getTransactionType());
+        existing.setTransactionDate(updatedTransaction.getTransactionDate());
+
+
+        return transactionRepository.save(existing);
+    }
+
+    public void deleteTransaction(Long userId, Long portfolioId, Long transactionId) {
+        Transaction existing = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+        transactionRepository.delete(existing);
+    }
+
+
+
 }

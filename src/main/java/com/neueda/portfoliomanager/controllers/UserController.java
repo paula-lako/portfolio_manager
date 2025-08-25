@@ -72,4 +72,15 @@ public class UserController {
     public ResponseEntity<List<Transaction>> addNewTransactionForPortfolio( @PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId, @RequestParam String stockTicker, @RequestBody Transaction transaction) {
         return new ResponseEntity<>(userService.addNewTransactionForPortfolio(transaction, userId, portfolioId, stockTicker), HttpStatus.OK);
     }
+
+    @PatchMapping("/{userId}/portfolios/{portfolioId}/transactions/{transactionId}")
+    public ResponseEntity<Transaction> updateTransaction(@PathVariable Long userId, @PathVariable Long portfolioId, @PathVariable Long transactionId,@RequestBody Transaction updatedTransaction) {
+        return new ResponseEntity<>(userService.updateTransaction(userId, portfolioId, transactionId, updatedTransaction), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{userId}/portfolios/{portfolioId}/transactions/{transactionId}")
+    public void deleteTransaction( @PathVariable Long userId, @PathVariable Long portfolioId, @PathVariable Long transactionId) {
+        userService.deleteTransaction(userId, portfolioId, transactionId);
+    }
+
 }
