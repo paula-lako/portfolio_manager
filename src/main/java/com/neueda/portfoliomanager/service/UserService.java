@@ -98,6 +98,7 @@ public class UserService {
 
         // obliczenia potrzebne do wyswietlenia performance,
         // dodac pola w klasie portfolio jak trzeba potem wyswietlic rozne wartosci i listy
+        // uzyj user stock
 
         return portfolio;
     }
@@ -112,14 +113,8 @@ public class UserService {
         transaction.setPortfolio(portfolio);
 
         Optional<Stock> findStock = stockRepository.findByTicker(stockTicker);
-        if (findStock.isPresent()) {
-            transaction.setStock(findStock.get());
-        } else {
-            findStock = Optional.of(new Stock());
-            transaction.setStock(findStock.get());
-            //jesli nie wyszukamy stocka to trzeba dodac pola,
-            // zeby wypelnic dane stocka....
-        }
+        transaction.setStock(findStock.get());
+
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setTotalPrice(transaction.getUnitPrice() * transaction.getAmount());
         List<Transaction> transactionList = portfolio.getTransactions();
@@ -137,7 +132,7 @@ public class UserService {
                     return us;
                 });
 
-// aktualizacja liczby akcji
+        // aktualizacja liczby akcji
         if (transaction.getTransactionType() == TransactionType.BUY) {
             userStock.setQuantity(userStock.getQuantity() + transaction.getAmount());
         } else if (transaction.getTransactionType() == TransactionType.SELL) {
@@ -147,9 +142,6 @@ public class UserService {
             userStock.setQuantity(userStock.getQuantity() - transaction.getAmount());
         }
         userStock.setActualPrice(userStock.getQuantity() * findStock.get().getCurrentValue());
-        userStockRepository.save(userStock);
-        portfolioRepository.save(portfolio);
-        transactionRepository.save(transaction);
         User user = getUserById(userId);
         List<Portfolio> userPortfolioList = user.getPortfolioList();
         for (int i = 0; i < userPortfolioList.size(); i++) {
@@ -160,6 +152,44 @@ public class UserService {
         }
         user.setPortfolioList(userPortfolioList);
         userRepository.save(user);
+        userStockRepository.save(userStock);
+        portfolioRepository.save(portfolio);
+        transactionRepository.save(transaction);
         return portfolio.getTransactions();
     }
+
+    public List<UserStock> getUserStocks(Long userId, Long portfolioId) {
+        User user = getUserById(userId);
+        List<Portfolio> portfolioList = user.getPortfolioList();
+        List<UserStock> userStocksList = new ArrayList<>();
+        for (int i = 0; i < portfolioList.size(); i++) {
+            Portfolio portfolio1 = portfolioList.get(i);
+            if (portfolio1.getId().equals(portfolioId)) {
+                userStocksList = portfolio1.getUserStocksList();
+            }
+            else throw new RuntimeException("Portfolio id not found");
+        }
+        return userStocksList;
+    }
+    public Transaction updateTransaction(Long userId, Long portfolioId, Long transactionId, Transaction updatedTransaction) {
+        Transaction existing = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        existing.setAmount(updatedTransaction.getAmount());
+        existing.setUnitPrice(updatedTransaction.getUnitPrice());
+        existing.setTransactionType(updatedTransaction.getTransactionType());
+        existing.setTransactionDate(updatedTransaction.getTransactionDate());
+
+
+        return transactionRepository.save(existing);
+    }
+
+    public void deleteTransaction(Long userId, Long portfolioId, Long transactionId) {
+        Transaction existing = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+        transactionRepository.delete(existing);
+    }
+
+
+
 }

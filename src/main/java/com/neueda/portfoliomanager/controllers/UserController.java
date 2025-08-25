@@ -4,6 +4,7 @@ import com.neueda.portfoliomanager.entity.Portfolio;
 import com.neueda.portfoliomanager.service.PortfolioService;
 import com.neueda.portfoliomanager.entity.Transaction;
 import com.neueda.portfoliomanager.entity.User;
+import com.neueda.portfoliomanager.entity.UserStock;
 import com.neueda.portfoliomanager.repository.UserRepository;
 import com.neueda.portfoliomanager.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,12 @@ public class UserController {
     private final PortfolioService portfolioService;
     private final UserRepository userRepository;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -65,15 +66,25 @@ public class UserController {
     public ResponseEntity<List<Transaction>> managePortfolio(@PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId) {
         return new ResponseEntity<>(userService.getUserPortfolioTransactions(userId, portfolioId), HttpStatus.OK);
     }
+    @GetMapping("/{userId}/portfolios/{portfolioId}/stocks")
+    public ResponseEntity<List<UserStock>> getUserStocks(@PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId) {
+        List<UserStock> userStocks = userService.getUserStocks(userId, portfolioId);
+        return new ResponseEntity<>(userStocks, HttpStatus.OK);
+    }
 
     @PostMapping("/{userId}/portfolios/{portfolioId}/managePortfolio/newTransaction")
-    public ResponseEntity<List<Transaction>> addNewTransactionForPortfolio(@RequestParam String stockTicker, @RequestBody Transaction transaction, @PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId) {
+    public ResponseEntity<List<Transaction>> addNewTransactionForPortfolio( @PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId, @RequestParam String stockTicker, @RequestBody Transaction transaction) {
         return new ResponseEntity<>(userService.addNewTransactionForPortfolio(transaction, userId, portfolioId, stockTicker), HttpStatus.OK);
     }
 
+    @PatchMapping("/{userId}/portfolios/{portfolioId}/transactions/{transactionId}")
+    public ResponseEntity<Transaction> updateTransaction(@PathVariable Long userId, @PathVariable Long portfolioId, @PathVariable Long transactionId,@RequestBody Transaction updatedTransaction) {
+        return new ResponseEntity<>(userService.updateTransaction(userId, portfolioId, transactionId, updatedTransaction), HttpStatus.OK);
+    }
 
-
-
-
+    @DeleteMapping("/{userId}/portfolios/{portfolioId}/transactions/{transactionId}")
+    public void deleteTransaction( @PathVariable Long userId, @PathVariable Long portfolioId, @PathVariable Long transactionId) {
+        userService.deleteTransaction(userId, portfolioId, transactionId);
+    }
 
 }

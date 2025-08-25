@@ -27,31 +27,11 @@
             <th>Name</th>
             <th>Type</th>
             <th>Current Price</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody id="financialInstrumentsTable">
-        <!-- Financial instruments to be inserted here -->
-        <tr>
-            <td>1</td>
-            <td>PKN</td>
-            <td>PKN Orlen S.A.</td>
-            <td>Stock</td>
-            <td>68.45 PLN</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>KGH</td>
-            <td>KGHM Polska Miedź S.A.</td>
-            <td>Stock</td>
-            <td>112.30 PLN</td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>PKO</td>
-            <td>PKO Bank Polski S.A.</td>
-            <td>Stock</td>
-            <td>46.90 PLN</td>
-        </tr>
+        <!-- Rows will be injected dynamically -->
         </tbody>
     </table>
 </div>
@@ -66,7 +46,51 @@
         })
         .catch(err => console.error("Sidebar load error:", err));
 
-    /*Logic for loading data*/
+
+
+
+     // Load stocks from backend
+    fetch("/stocks")
+    .then(response => response.json())
+    .then(stocks => {
+        const tableBody = document.getElementById("financialInstrumentsTable");
+        tableBody.innerHTML = "";
+
+        stocks.forEach(stock => {
+            const row = `
+                <tr>
+                    <td>${stock.id}</td>
+                    <td>
+                       <a href="stockdetails.html?id=${stock.id}">${stock.ticker}</a>
+                    </td>
+                    <td>${stock.name}</td>
+                    <td>${stock.stockType ?? '-'}</td>
+                    <td>${stock.currentValue} PLN</td>
+                     <td>
+                        <button class="btn btn-sm btn-primary add-btn"
+                                data-ticker="${stock.ticker}"
+                                data-price="${stock.currentValue}">
+                            Add
+                        </button>
+                     </td>
+                </tr>`;
+            tableBody.insertAdjacentHTML("beforeend", row);
+        });
+
+
+        tableBody.addEventListener("click", (e) => {
+            if (e.target.classList.contains("add-btn")) {
+                const ticker = e.target.getAttribute("data-ticker");
+                const price = e.target.getAttribute("data-price");
+                const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+
+                const url = `addtransaction.html?ticker=${encodeURIComponent(ticker)}&price=${encodeURIComponent(price)}&date=${today}&type=BUY`;
+                window.location.href = url;
+            }
+        });
+    })
+    .catch(err => console.error("Error loading stocks:", err));
+
 
 </script>
 </body>
