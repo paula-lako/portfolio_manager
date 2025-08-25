@@ -22,7 +22,7 @@ CCC,CCC SA,STOCK
 PCO,Pepco Group NV,STOCK
 OPL,Orange Polska SA,STOCK
 ENA,Enea SA,STOCK
-CPS,SCyfrowy Polsat SA,STOCK
+CPS,Cyfrowy Polsat SA,STOCK
 XTB,X-Trade Brokers SA,STOCK
 KTY,Grupa Kęty SA,STOCK
 KRU,Kruk SA,STOCK
@@ -47,4 +47,5 @@ UNI,Unibep SA,STOCK
 ANR,Sample ANR,STOCK
 SNK, Answear.com SA,STOCK
 10YPLY.B,Poland 10-Year Government Bond Yield,BOND
-OLA,Ola's Company Name,STOCK
+OLA,Ola's Company Name,STOCKNEW Instrument,New Financial Instrument (For test purpose),OTHER
+NEW Instrument,New Financial Instrument (For test purpose),OTHER

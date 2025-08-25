@@ -110,6 +110,7 @@
             })
             .then(() => {
                 responseMessage.innerHTML = `<div class="alert alert-success">Transaction added successfully!</div>`;
+                document.getElementById("transactionForm").reset();
             })
             .catch(err => {
                 responseMessage.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;

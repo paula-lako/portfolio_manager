@@ -16,7 +16,7 @@
 
     <!-- Search field -->
     <div class="mb-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search by ticker, type or date ...">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by ticker, name or type ...">
     </div>
 
     <table class="table table-striped table-bordered">
@@ -38,7 +38,7 @@
 
 <script>
 
-    // Load sidebar dynamically
+    //Load sidebar dynamically
     fetch("sidebar.html")
         .then(res => res.text())
         .then(data => {
@@ -47,51 +47,67 @@
         .catch(err => console.error("Sidebar load error:", err));
 
 
-
-
-     // Load stocks from backend
+    //Load stocks from backend
     fetch("/stocks")
-    .then(response => response.json())
-    .then(stocks => {
-        const tableBody = document.getElementById("financialInstrumentsTable");
-        tableBody.innerHTML = "";
+        .then(response => response.json())
+        .then(stocks => {
+            const tableBody = document.getElementById("financialInstrumentsTable");
+            tableBody.innerHTML = "";
 
-        stocks.forEach(stock => {
-            const row = `
-                <tr>
-                    <td>${stock.id}</td>
-                    <td>
-                       <a href="stockdetails.html?id=${stock.id}">${stock.ticker}</a>
-                    </td>
-                    <td>${stock.name}</td>
-                    <td>${stock.stockType ?? '-'}</td>
-                    <td>${stock.currentValue} PLN</td>
-                     <td>
-                        <button class="btn btn-sm btn-primary add-btn"
-                                data-ticker="${stock.ticker}"
-                                data-price="${stock.currentValue}">
-                            Add
-                        </button>
-                     </td>
-                </tr>`;
-            tableBody.insertAdjacentHTML("beforeend", row);
-        });
+            //List of all stocks
+            let allStocks = stocks;
 
-
-        tableBody.addEventListener("click", (e) => {
-            if (e.target.classList.contains("add-btn")) {
-                const ticker = e.target.getAttribute("data-ticker");
-                const price = e.target.getAttribute("data-price");
-                const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
-
-                const url = `addtransaction.html?ticker=${encodeURIComponent(ticker)}&price=${encodeURIComponent(price)}&date=${today}&type=BUY`;
-                window.location.href = url;
+            function renderTable(filteredStocks) {
+                tableBody.innerHTML = "";
+                filteredStocks.forEach(stock => {
+                    const row = `
+                        <tr>
+                            <td>${stock.id}</td>
+                            <td>
+                               <a href="stockdetails.html?id=${stock.id}">${stock.ticker}</a>
+                            </td>
+                            <td>${stock.name}</td>
+                            <td>${stock.stockType ?? '-'}</td>
+                            <td>${stock.currentValue} PLN</td>
+                             <td>
+                                <button class="btn btn-sm btn-primary add-btn"
+                                        data-ticker="${stock.ticker}"
+                                        data-price="${stock.currentValue}">
+                                    Add
+                                </button>
+                             </td>
+                        </tr>`;
+                    tableBody.insertAdjacentHTML("beforeend", row);
+                });
             }
-        });
-    })
-    .catch(err => console.error("Error loading stocks:", err));
 
+            //Render of whole list
+            renderTable(allStocks);
 
+            //Filter logic for Search Input
+            const searchInput = document.getElementById("searchInput");
+            searchInput.addEventListener("input", () => {
+                const query = searchInput.value.toLowerCase();
+                const filtered = allStocks.filter(stock =>
+                    stock.ticker.toLowerCase().includes(query) ||
+                    stock.name.toLowerCase().includes(query) ||
+                    (stock.stockType ?? "").toLowerCase().includes(query)
+                );
+                renderTable(filtered);
+            });
+
+            //Add button logic
+            tableBody.addEventListener("click", (e) => {
+                if (e.target.classList.contains("add-btn")) {
+                    const ticker = e.target.getAttribute("data-ticker");
+                    const price = e.target.getAttribute("data-price");
+                    const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+                    const url = `addtransaction.html?ticker=${encodeURIComponent(ticker)}&price=${encodeURIComponent(price)}&date=${today}&type=BUY`;
+                    window.location.href = url;
+                }
+            });
+        })
+        .catch(err => console.error("Error loading stocks:", err));
 </script>
 </body>
 </html>
