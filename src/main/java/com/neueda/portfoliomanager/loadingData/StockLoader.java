@@ -13,7 +13,7 @@ public class StockLoader {
             List<String[]> loadedStocks = new ArrayList<>();
 
             try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(new ClassPathResource("stocks.csv").getInputStream(), StandardCharsets.UTF_8))) {
+                    new InputStreamReader(new ClassPathResource("data/stocks.csv").getInputStream(), StandardCharsets.UTF_8))) {
 
                 // Skip header, then split into array [ticker, name, type]
                 loadedStocks = reader.lines()

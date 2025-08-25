@@ -30,7 +30,7 @@ public class StockController {
         logger.info("GET /stocks called");
         List<Stock> stocks = stockService.getAllStocks();
         for (Stock stock : stocks) {
-            logger.info("Book details: {}", stock);
+            logger.info("Stock details: {}", stock);
         }
         return ResponseEntity.ok(stocks);
     }
@@ -62,9 +62,9 @@ public class StockController {
     }
 
     @PatchMapping("/{stockId}")
-    public ResponseEntity<String> updateStock(@PathVariable Long stockId, @RequestBody Stock stock) {
+    public ResponseEntity<Stock> updateStock(@PathVariable Long stockId, @RequestBody Stock stock) {
         stockService.updateStock(stockId, stock);
-        return ResponseEntity.ok("Stock successfully updated!");
+        return new ResponseEntity<>(stock, HttpStatus.ACCEPTED);
     }
 
 }

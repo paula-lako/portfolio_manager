@@ -1,25 +1,25 @@
 ticker,name,stockType
-PKO,PKO Bank Polski,STOCK
-PKN,PKN Orlen,STOCK
-PZU,PZU SA,STOCK
-SPL,Sample SPL,STOCK
-PEO,Sample PEO,STOCK
-DNP,Sample DNP,STOCK
-ING,ING Bank,STOCK
-MBK,Sample MBK,STOCK
-ALE,Sample ALE,STOCK
+PKO,PKO Bank Polski SA,STOCK
+PKN,Orlen SA,STOCK
+PZU,Powszechny Zakład Ubezpieczeń SA,STOCK
+SPL,Santander Bank Polska SA,STOCK
+PEO,Bank Pekao SA,STOCK
+DNP,Dino Polska SA,STOCK
+ING,ING Bank Śląski SA,STOCK
+MBK,mBank SA,STOCK
+ALE,Allegro.eu SA,STOCK
 LPP,LPP SA,STOCK
-KGH,KGHM Polska Miedź,STOCK
-PGE,PGE Polska Grupa Energetyczna,STOCK
-CDR,CD Projekt,STOCK
-ZAB,Sample ZAB,STOCK
-ACP,Sample ACP,STOCK
-ALR,Sample ALR,STOCK
-TPE,Sample TPE,STOCK
-BHW,Sample BHW,STOCK
-BDX,Sample BDX,STOCK
+KGH,KGHM Polska Miedź SA,STOCK
+PGE,PGE Polska Grupa Energetyczna SA,STOCK
+CDR,CD Projekt SA,STOCK
+ZAB,Zabka Group SA,STOCK
+ACP,Asseco Poland SA,STOCK
+ALR,Alior Bank SA,STOCK
+TPE,Tauron Polska Energia SA,STOCK
+BHW,Bank Handlowy w Warszawie SA,STOCK
+BDX,Budimex SA,STOCK
 CCC,CCC SA,STOCK
-PCO,Sample PCO,STOCK
+PCO,Pepco Group NV,STOCK
 OPL,Sample OPL,STOCK
 ENA,Sample ENA,STOCK
 CPS,Sample CPS,STOCK
@@ -45,6 +45,5 @@ ERB,Sample ERB,STOCK
 ENT,Sample ENT,STOCK
 UNI,Sample UNI,STOCK
 ANR,Sample ANR,STOCK
-SNK,Sample SNK,STOCK
+SNK,SNK Company Name,STOCK
 10YPLY.B,Poland 10-Year Government Bond Yield,BOND
-AAAAX,Example of non existing ticker,OTHER

@@ -9,6 +9,13 @@ import com.neueda.portfoliomanager.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -16,11 +23,27 @@ public class StockService {
 
     private final StockRepository stockRepository;
     private final StockHistoryRepository stockHistoryRepository;
+    private final StockDataService stockDataService;
 
     @Autowired
-    public StockService(StockRepository stockRepository, StockHistoryRepository stockHistoryRepository) {
+    public StockService(StockRepository stockRepository, StockHistoryRepository stockHistoryRepository, StockDataService stockDataService) {
         this.stockRepository = stockRepository;
         this.stockHistoryRepository = stockHistoryRepository;
+        this.stockDataService = stockDataService;
+    }
+
+    private void appendStockToCsv(Stock stock) {
+        try {
+
+            Path path = Paths.get("src/main/resources/data/stocks.csv");
+
+            // Row format: ticker,name,stockType
+            String row = stock.getTicker() + "," + stock.getName() + "," + stock.getStockType() + System.lineSeparator();
+
+            Files.write(path, row.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to append stock to CSV", e);
+        }
     }
 
     public List<Stock> getAllStocks() {
@@ -63,7 +86,11 @@ public class StockService {
             );
         }
 
-        return stockRepository.save(stock);
+        //Add row to the stock file
+        appendStockToCsv(stock);
+
+        //Try to download historical data for this ticker and save the ticker to repository
+        return stockDataService.fetchAndSaveSingleTicker(stock.getTicker(), stock.getName(), stock.getStockType(), LocalDate.now().minusDays(30), LocalDate.now());
     }
 
     public void deleteStock(Long id) {
