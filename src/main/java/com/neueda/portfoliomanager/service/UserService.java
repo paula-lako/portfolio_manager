@@ -90,6 +90,7 @@ public class UserService {
 
         // obliczenia potrzebne do wyswietlenia performance,
         // dodac pola w klasie portfolio jak trzeba potem wyswietlic rozne wartosci i listy
+        // uzyj user stock
 
         return portfolio;
     }
@@ -104,14 +105,8 @@ public class UserService {
         transaction.setPortfolio(portfolio);
 
         Optional<Stock> findStock = stockRepository.findByTicker(stockTicker);
-        if (findStock.isPresent()) {
             transaction.setStock(findStock.get());
-        } else {
-            findStock = Optional.of(new Stock());
-            transaction.setStock(findStock.get());
-            //jesli nie wyszukamy stocka to trzeba dodac pola,
-            // zeby wypelnic dane stocka....
-        }
+
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setTotalPrice(transaction.getUnitPrice() * transaction.getAmount());
         List<Transaction> transactionList = portfolio.getTransactions();
@@ -129,7 +124,7 @@ public class UserService {
                     return us;
                 });
 
-// aktualizacja liczby akcji
+      // aktualizacja liczby akcji
         if (transaction.getTransactionType() == TransactionType.BUY) {
             userStock.setQuantity(userStock.getQuantity() + transaction.getAmount());
         } else if (transaction.getTransactionType() == TransactionType.SELL) {
