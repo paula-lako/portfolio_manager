@@ -1,10 +1,12 @@
 package com.neueda.portfoliomanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,8 @@ public class Stock {
 
     @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
-//    @JsonIgnore
+    @JsonIgnore
+    @ToString.Exclude
     private List<StockHistory> historicalValues = new ArrayList<>();
 }
 
