@@ -1,5 +1,6 @@
 package com.neueda.portfoliomanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,8 @@ public class Portfolio {
     @JsonManagedReference
     private List<Transaction> transactions;
 
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<UserStock> userStocksList;
     // dodaj liste userStocks
 }

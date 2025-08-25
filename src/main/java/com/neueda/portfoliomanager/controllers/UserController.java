@@ -3,6 +3,7 @@ package com.neueda.portfoliomanager.controllers;
 import com.neueda.portfoliomanager.entity.Portfolio;
 import com.neueda.portfoliomanager.entity.Transaction;
 import com.neueda.portfoliomanager.entity.User;
+import com.neueda.portfoliomanager.entity.UserStock;
 import com.neueda.portfoliomanager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,11 @@ public class UserController {
     public ResponseEntity<List<Portfolio>> getUserPortfolios(@PathVariable("userId") Long userId) {
         List<Portfolio> userPortfolios = userService.getUserPortfolios(userId);
         return new ResponseEntity<>(userPortfolios, HttpStatus.OK);
+    }
+    @GetMapping("/{userId}/stocks")
+    public ResponseEntity<List<UserStock>> getUserStocks(@PathVariable("userId") Long userId) {
+        List<UserStock> userStocks = userService.getUserStocks(userId);
+        return new ResponseEntity<>(userStocks, HttpStatus.OK);
     }
 
     @PostMapping("/{userId}/portfolios/create")
