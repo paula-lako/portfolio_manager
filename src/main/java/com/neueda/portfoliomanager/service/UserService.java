@@ -109,9 +109,9 @@ public class UserService {
 
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setTotalPrice(transaction.getUnitPrice() * transaction.getAmount());
-        List<Transaction> transactionList = portfolio.getTransactions();
-        transactionList.add(transaction);
-        portfolio.setTransactions(transactionList);
+//        List<Transaction> transactionList = portfolio.getTransactions();
+//        transactionList.add(transaction);
+//        portfolio.setTransactions(transactionList);
         // znajdź UserStock w tym portfelu lub stwórz nowy
         Optional<Stock> finalFindStock = findStock;
         UserStock userStock = userStockRepository.findByPortfolioAndStock(portfolio, findStock.get())
@@ -127,6 +127,7 @@ public class UserService {
         // aktualizacja liczby akcji
         if (transaction.getTransactionType() == TransactionType.BUY) {
             userStock.setQuantity(userStock.getQuantity() + transaction.getAmount());
+
         } else if (transaction.getTransactionType() == TransactionType.SELL) {
             if (userStock.getQuantity() < transaction.getAmount()) {
                 throw new RuntimeException("Not enough stocks to sell");
@@ -154,15 +155,42 @@ public class UserService {
         User user = getUserById(userId);
         List<Portfolio> portfolioList = user.getPortfolioList();
         List<UserStock> userStocksList = new ArrayList<>();
+
         for (int i = 0; i < portfolioList.size(); i++) {
             Portfolio portfolio1 = portfolioList.get(i);
             if (portfolio1.getId().equals(portfolioId)) {
                 userStocksList = portfolio1.getUserStocksList();
+
+                for (UserStock us : userStocksList) {
+                    List<Transaction> transactions =
+                            transactionRepository.findByPortfolioAndStock(portfolio1, us.getStock());
+
+                    double invested = 0;
+                    double quantity = 0;
+
+                    for (Transaction t : transactions) {
+                        if (t.getTransactionType() == TransactionType.BUY) {
+                            invested += t.getUnitPrice() * t.getAmount();
+                            quantity += t.getAmount();
+                        } else if (t.getTransactionType() == TransactionType.SELL) {
+                            double avgPrice = invested / (quantity == 0 ? 1 : quantity);
+                            invested -= avgPrice * t.getAmount();
+                            quantity -= t.getAmount();
+                        }
+                    }
+
+                    us.setInvestedMoney(invested);
+                    us.setQuantity(quantity);
+                    us.setActualPrice(quantity * us.getStock().getCurrentValue());
+                }
+                return userStocksList;
             }
-            else throw new RuntimeException("Portfolio id not found");
         }
-        return userStocksList;
+
+        throw new RuntimeException("Portfolio id not found");
     }
+
+
     public Transaction updateTransaction(Long userId, Long portfolioId, Long transactionId, Transaction updatedTransaction) {
         Transaction existing = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
