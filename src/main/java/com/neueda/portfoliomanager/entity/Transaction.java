@@ -38,11 +38,12 @@ public class Transaction {
     private double totalPrice;
     private double unitPrice;
 
-    public Transaction(Long id, double amount, TransactionType transactionType, double unitPrice) {
+    public Transaction(Long id, double amount, TransactionType transactionType, double unitPrice, LocalDateTime transactionDate) {
         this.id = id;
         this.amount = amount;
         this.transactionType = transactionType;
         this.unitPrice = unitPrice;
+        this.transactionDate = transactionDate;
     }
 
     @JsonProperty("stockTicker")
