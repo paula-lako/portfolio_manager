@@ -21,13 +21,13 @@ public class DataInitializer implements CommandLineRunner {
     }
     @Override
     public void run(String... args) {
-        if (stockDataService.needsUpdate()) {
-            stockDataService.fetchDataFromStooq(
-                    StockLoaderService.getTickers(),
-                    LocalDate.now().minusDays(30),
-                    LocalDate.now());
-            System.out.println("Pobrano nowe dane z Stooq");
-        }
+//        //if (stockDataService.needsUpdate()) {
+//            stockDataService.fetchDataFromStooq(
+//                    StockLoaderService.getTickers(),
+//                    LocalDate.now().minusDays(30),
+//                    LocalDate.now());
+//            System.out.println("Pobrano nowe dane z Stooq");
+//       // }
         stockDataService.saveDataToDatabase();
         System.out.println("Dane zapisane do bazy.");
     }

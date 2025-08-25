@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<div id="sidebar-container"></div>
+
+
+<!-- Main Content -->
+<div class="content">
+    <div class="content container mt-4">
+        <h2 id="stockName">📈 Stock Details</h2>
+        <p><strong>Ticker:</strong> <span id="stockTicker"></span></p>
+        <p><strong>Current Price:</strong> <span id="stockPrice"></span></p>
+
+        <canvas id="historyChart" width="600" height="300"></canvas>
+    </div>
+</div>
+
+
+<script>
+    // Sidebar
+    fetch("sidebar.html")
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById("sidebar-container").innerHTML = data;
+        })
+        .catch(err => console.error("Sidebar load error:", err));
+
+    // Get stock id from URL
+    const params = new URLSearchParams(window.location.search);
+    const stockId = params.get("id");
+
+
+
+    // Fetch stock with history
+    fetch(`/stocks/${stockId}`)
+        .then(res => res.json())
+        .then(stock => {
+            document.getElementById("stockName").textContent = stock.name;
+            document.getElementById("stockTicker").textContent = stock.ticker;
+            document.getElementById("stockPrice").textContent = stock.currentValue + " PLN";
+
+            // Prepare data for chart
+            const labels = stock.historicalValues.map(v => v.date);
+            const values = stock.historicalValues.map(v => v.closeValue);
+
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Close Price',
+                        data: values,
+                        borderColor: 'blue',
+                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+        })
+        .catch(err => console.error("Error loading stock:", err));
+</script>
+</body>
+</html>
