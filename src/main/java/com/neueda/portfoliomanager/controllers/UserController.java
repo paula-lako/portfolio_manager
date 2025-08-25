@@ -19,12 +19,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -47,11 +47,6 @@ public class UserController {
         List<Portfolio> userPortfolios = userService.getUserPortfolios(userId);
         return new ResponseEntity<>(userPortfolios, HttpStatus.OK);
     }
-    @GetMapping("/{userId}/stocks")
-    public ResponseEntity<List<UserStock>> getUserStocks(@PathVariable("userId") Long userId) {
-        List<UserStock> userStocks = userService.getUserStocks(userId);
-        return new ResponseEntity<>(userStocks, HttpStatus.OK);
-    }
 
     @PostMapping("/{userId}/portfolios/create")
     public ResponseEntity<Portfolio> createNewPortfolio(@PathVariable("userId") Long userId, @RequestParam String portfolioName) {
@@ -66,6 +61,11 @@ public class UserController {
     @GetMapping("/{userId}/portfolios/{portfolioId}/managePortfolio")
     public ResponseEntity<List<Transaction>> managePortfolio(@PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId) {
         return new ResponseEntity<>(userService.getUserPortfolioTransactions(userId, portfolioId), HttpStatus.OK);
+    }
+    @GetMapping("/{userId}/portfolios/{portfolioId}/stocks")
+    public ResponseEntity<List<UserStock>> getUserStocks(@PathVariable("userId") Long userId, @PathVariable("portfolioId") Long portfolioId) {
+        List<UserStock> userStocks = userService.getUserStocks(userId, portfolioId);
+        return new ResponseEntity<>(userStocks, HttpStatus.OK);
     }
 
     @PostMapping("/{userId}/portfolios/{portfolioId}/managePortfolio/newTransaction")
