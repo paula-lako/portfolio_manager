@@ -31,6 +31,11 @@ public class StockService {
         return stockRepository.findById(id)
                 .orElseThrow(() -> new StockNotFoundException("Stock with id " + id + " not found"));
     }
+//    public Stock getStockById(Long id) {
+//        return stockRepository.findWithHistoryById(id)
+//                .orElseThrow(() -> new StockNotFoundException("Stock with id " + id + " not found"));
+//    }
+
 
     public Stock getStockByTicker(String ticker) {
         return stockRepository.findByTicker(ticker)

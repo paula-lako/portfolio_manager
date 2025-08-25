@@ -22,8 +22,8 @@ public class UserStock {
     private Stock stock;
 
     @ManyToOne
-    @JoinColumn(name = "portfolio_id", referencedColumnName = "id")
-    @JsonBackReference
+    @JoinColumn(name = "portfolio_id")
+    @JsonBackReference("portfolio-stocks")
     private Portfolio portfolio;
 
     private double actualPrice; // quantity * stock.currentValue
