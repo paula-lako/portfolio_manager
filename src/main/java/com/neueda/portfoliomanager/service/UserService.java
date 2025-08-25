@@ -109,9 +109,6 @@ public class UserService {
 
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setTotalPrice(transaction.getUnitPrice() * transaction.getAmount());
-        List<Transaction> transactionList = portfolio.getTransactions();
-        transactionList.add(transaction);
-        portfolio.setTransactions(transactionList);
         // znajdź UserStock w tym portfelu lub stwórz nowy
         Optional<Stock> finalFindStock = findStock;
         UserStock userStock = userStockRepository.findByPortfolioAndStock(portfolio, findStock.get())
